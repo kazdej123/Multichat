@@ -10,26 +10,34 @@ import java.util.Scanner;
 final class Server {
     private static final int PORT = 8189;
 
+    private static final Scanner stdin = new Scanner(System.in);
+    private static final PrintStream stdout = System.out;
+
     public static void main(final String[] args) throws IOException {
-        write("Starting the server...");
+        write("Uruchamiam serwer...");
         try (final ServerSocket serverSocket = new ServerSocket(PORT)) {
-            write("Server started.");
+            write("Serwer zostal pomyslnie uruchomiony.");
 
-            write("Waiting for client...");
+            write("Oczekiwanie na klienta...");
             try (final Socket socket = serverSocket.accept()) {
-                write("Client connected.");
-
                 try (final Scanner socketInput = new Scanner(socket.getInputStream());
                      final PrintWriter socketOutput = new PrintWriter(socket.getOutputStream(), true)) {
+                    write("Klient zostal polaczony.");
 
-                    final Scanner input = new Scanner(System.in);
-                    final PrintStream output = System.out;
+                    while (true) {
+                        stdout.print("Klient: ");
+                        final String inputMessage = socketInput.nextLine();
+                        stdout.println(inputMessage);
 
-                    while (socketInput.hasNextLine()) {
-                        final String message = socketInput.nextLine();
-                        output.println(message);
+                        if (inputMessage.equalsIgnoreCase("exit")) {
+                            break;
+                        }
 
-                        if (message.equalsIgnoreCase("exit")) {
+                        stdout.print("Serwer: ");
+                        final String outputMessage = stdin.nextLine();
+                        socketOutput.println(outputMessage);
+
+                        if (outputMessage.equalsIgnoreCase("exit")) {
                             break;
                         }
                     }
@@ -39,6 +47,6 @@ final class Server {
     }
 
     private static void write(final Object message) {
-        System.err.println("Server: " + message);
+        System.err.println("Serwer: " + message);
     }
 }

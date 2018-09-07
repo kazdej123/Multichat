@@ -10,26 +10,34 @@ final class Client {
     private static final String HOST = null;
     private static final int PORT = 8189;
 
+    private static final Scanner stdin = new Scanner(System.in);
+    private static final PrintStream stdout = System.out;
+
     public static void main(final String[] args) throws IOException {
         new Client();
     }
 
     private Client() throws IOException {
-        write("Connecting with server...");
+        write("Laczenie z serwerem...");
         try (final Socket socket = new Socket(HOST, PORT)) {
-            write("Connected with server.");
-
             try (final Scanner socketInput = new Scanner(socket.getInputStream());
                  final PrintWriter socketOutput = new PrintWriter(socket.getOutputStream(), true)) {
+                write("Polaczono z serwerem.");
 
-                final Scanner input = new Scanner(System.in);
-                final PrintStream output = System.out;
-
-                while (input.hasNextLine()) {
-                    final String message = input.nextLine();
+                while (true) {
+                    stdout.print("Klient: ");
+                    final String message = stdin.nextLine();
                     socketOutput.println(message);
 
                     if (message.equalsIgnoreCase("exit")) {
+                        break;
+                    }
+
+                    stdout.print("Serwer: ");
+                    final String inputMessage = socketInput.nextLine();
+                    stdout.println(inputMessage);
+
+                    if (inputMessage.equalsIgnoreCase("exit")) {
                         break;
                     }
                 }
@@ -38,6 +46,6 @@ final class Client {
     }
 
     private static void write(final Object message) {
-        System.err.println("Client: " + message);
+        System.err.println("Klient: " + message);
     }
 }

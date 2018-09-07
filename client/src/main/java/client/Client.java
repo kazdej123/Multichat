@@ -19,12 +19,12 @@ final class Client {
 
     private Client() throws IOException {
         write("Laczenie z serwerem...");
+
         try (final Socket socket = new Socket(HOST, PORT)) {
             try (final Scanner socketInput = new Scanner(socket.getInputStream());
                  final PrintWriter socketOutput = new PrintWriter(socket.getOutputStream(), true)) {
                 write("Polaczono z serwerem.");
-
-                while (true) {
+                /*while (true) {
                     stdout.print("Klient: ");
                     final String message = stdin.nextLine();
                     socketOutput.println(message);
@@ -40,7 +40,7 @@ final class Client {
                     if (inputMessage.equalsIgnoreCase("exit")) {
                         break;
                     }
-                }
+                }*/
             }
         }
     }

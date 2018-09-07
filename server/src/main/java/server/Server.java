@@ -1,6 +1,7 @@
 package server;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,21 +11,34 @@ final class Server {
     private static final int PORT = 8189;
 
     public static void main(final String[] args) throws IOException {
-        write("Uruchamianie serwera...");
+        write("Starting the server...");
         try (final ServerSocket serverSocket = new ServerSocket(PORT)) {
-            write("Pomyślnie uruchomiono serwer.\nCzekam na połączenie z klientem...");
+            write("Server started.");
+
+            write("Waiting for client...");
             try (final Socket socket = serverSocket.accept()) {
-                write("Połączono z klientem");
-                try (final Scanner input = new Scanner(socket.getInputStream());
-                     final PrintWriter output = new PrintWriter(socket.getOutputStream(), true)) {
-                    output.println("Witam, tu serwer.");
-                    System.out.println(input.nextLine());
+                write("Client connected.");
+
+                try (final Scanner socketInput = new Scanner(socket.getInputStream());
+                     final PrintWriter socketOutput = new PrintWriter(socket.getOutputStream(), true)) {
+
+                    final Scanner input = new Scanner(System.in);
+                    final PrintStream output = System.out;
+
+                    while (socketInput.hasNextLine()) {
+                        final String message = socketInput.nextLine();
+                        output.println(message);
+
+                        if (message.equalsIgnoreCase("exit")) {
+                            break;
+                        }
+                    }
                 }
             }
         }
     }
 
     private static void write(final Object message) {
-        System.err.println(message);
+        System.err.println("Server: " + message);
     }
 }

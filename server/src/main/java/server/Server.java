@@ -1,38 +1,38 @@
 package server;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 final class Server implements Runnable {
-    private enum ServerState {
-        RUNNING, SHUTDOWN, SHUTDOWN_NOW
-    }
-
-    private static final Scanner stdin = new Scanner(System.in);
     private static final PrintStream stderr = System.err;
 
-    private final ServerSocket serverSocket = new ServerSocket(8189);
-    private final Thread serverMainThread = new Thread(this);
+    private enum ServerExitMode {
+        SHUTDOWN, SHUTDOWN_NOW, EXIT
+    }
 
-    private volatile ServerState serverState;
+    private final ServerSocket serverSocket;
+    private final Thread serverMainThread;
+    private final ExecutorService executorService;
 
     public static void main(final String[] args) throws IOException {
         final Server server = new Server();
 
-        while (server.isRunning()) {
-            System.out.print("> ");
-
-            switch (stdin.nextLine()) {
-                case "shutdown": server.exit(ServerState.SHUTDOWN); break;
-                case "shutdown -n": server.exit(ServerState.SHUTDOWN_NOW); break;
-                case "exit": System.exit(1);
+        while (true) {
+            synchronized (stderr) {
+                stderr.print("> ");
+            }
+            switch ((new Scanner(System.in)).nextLine()) {
+                case "shutdown": server.exit(ServerExitMode.SHUTDOWN); return;
+                case "shutdown -n": server.exit(ServerExitMode.SHUTDOWN_NOW); return;
+                case "exit": server.exit(ServerExitMode.EXIT); return;
                 default: break;
             }
         }
@@ -40,35 +40,47 @@ final class Server implements Runnable {
 
     private Server() throws IOException {
         println("Uruchamiam serwer...");
-        serverState = ServerState.RUNNING;
+        serverSocket = new ServerSocket(8189);
+        serverMainThread = new Thread(this);
+        executorService = Executors.newFixedThreadPool(2);
+
         serverMainThread.start();
         println("Pomyslnie uruchomiono serwer.");
     }
 
-    private void exit(final ServerState serverState) {
+    private void exit(final ServerExitMode serverExitMode) {
         println("Zamykam serwer...");
-
-        synchronized (this) {
-            this.serverState = serverState;
-        }
         try {
-            serverMainThread.join();
+            serverSocket.close();
+            shutdownExecutorService(serverExitMode);
             try {
-                serverSocket.close();
-            } catch (final IOException e) {
+                serverMainThread.join();
+                println("Pomyslnie zamknieto serwer.");
+            } catch (final InterruptedException e) {
                 handleServerClosingError(e);
                 System.exit(1);
             }
-            println("Pomyslnie zamknieto serwer.");
-        } catch (final InterruptedException e) {
+        } catch (final IOException e) {
             handleServerClosingError(e);
+            shutdownExecutorService(serverExitMode);
             try {
-                serverSocket.close();
-            } catch (final IOException e1) {
+                serverMainThread.join();
+            } catch (final InterruptedException e1) {
                 e1.printStackTrace();
             }
             System.exit(1);
         }
+    }
+
+    private void shutdownExecutorService(@NotNull final ServerExitMode serverExitMode) {
+        switch (serverExitMode) {
+            case SHUTDOWN: executorService.shutdown(); break;
+            case SHUTDOWN_NOW: executorService.shutdownNow(); break;
+            case EXIT: executorService.shutdownNow(); System.exit(1);
+            default: break;
+        }
+        //noinspection StatementWithEmptyBody
+        while (!executorService.isTerminated()) {}
     }
 
     private static void handleServerClosingError(@NotNull final Exception e) {
@@ -78,29 +90,20 @@ final class Server implements Runnable {
 
     @Override
     public final void run() {
-        final ExecutorService executorService = Executors.newFixedThreadPool(2);
-
-        while (isRunning()) {
+        while (true) {
+            println("Oczekiwanie na klienta...");
             try {
-                println("Oczekiwanie na klienta...");
-                executorService.execute(new ClientHandler(serverSocket.accept()));
+                final Socket socket = serverSocket.accept();
+                executorService.execute(new ClientHandler(socket));
+            } catch (final SocketException e) {
+                println("Przerwano dzialanie gniazda serwera.");
+                return;
             } catch (final IOException e) {
+                println("BLAD! Polaczenie z nowym klientem nie powiodlo sie.");
                 e.printStackTrace();
-                executorService.shutdown();
+                return;
             }
         }
-        switch (serverState) {
-            case SHUTDOWN: executorService.shutdown(); break;
-            case SHUTDOWN_NOW: executorService.shutdownNow(); break;
-            default: return;
-        }
-        //noinspection StatementWithEmptyBody
-        while (!executorService.isTerminated()) {}
-    }
-
-    @Contract(pure = true)
-    private synchronized boolean isRunning() {
-        return serverState == ServerState.RUNNING;
     }
 
     static void println(final Object object) {

@@ -4,23 +4,21 @@ import java.io.IOException;
 import java.net.Socket;
 
 final class ClientHandler implements Runnable {
-    private static int clientCounter = 1;
-
-    private final int clientNumber = clientCounter++;
     private final Socket socket;
 
     ClientHandler(final Socket socket) {
         this.socket = socket;
-        println("Klient nr " + clientNumber + " nawiazal polaczenie.");
     }
 
     @Override
     public final void run() {
+        // TODO
+        println("Zamykam polaczenie z klientem...");
         try {
             socket.close();
-            println("Klient nr " + clientNumber + " rozlaczyl sie.");
-        } catch (IOException e) {
-            println("BLAD! rozlaczania klienta nr " + clientNumber + ".");
+            println("Klient rozlaczyl sie pomyslnie.");
+        } catch (final IOException e) {
+            println("BLAD! Nie udalo sie rozlaczyc klienta.");
             e.printStackTrace();
         }
     }

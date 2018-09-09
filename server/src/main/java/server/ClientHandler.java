@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 final class ClientHandler implements Runnable {
+    private static final int EXIT = 0;
+    private static final int LOGIN = 1;
+
     private final Socket socket;
 
     private Scanner scanner = null;
@@ -50,15 +54,19 @@ final class ClientHandler implements Runnable {
     @Override
     public final void run() {
         if (socket != null) {
-            final String login = scanner.next();
-            System.out.println(login);
-            if (login.equals("kano")) {
-                writer.print(true);
-            } else {
-                writer.print(false);
+            while (true) {
+                switch (scanner.nextInt()) {
+                    case LOGIN: login(); break;
+                    case EXIT: exit(); return;
+                    default: break;
+                }
             }
-            exit();
         }
+    }
+
+    private void login() {
+        final String login = scanner.next("[a-zA-Z_0-9]+");
+        System.out.println(login);
     }
 
     private void exit() {

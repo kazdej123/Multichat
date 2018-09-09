@@ -10,6 +10,9 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 final class Client {
+    private static final int EXIT = 0;
+    private static final int LOGIN = 1;
+
     private static final Scanner input = new Scanner(System.in);
     private static final PrintStream output = System.out;
     private static final PrintStream err = System.err;
@@ -20,7 +23,7 @@ final class Client {
 
     public static void main(final String[] args) {
         final Client client = new Client();
-        client.login();
+        client.init();
         client.exit();
     }
 
@@ -31,7 +34,7 @@ final class Client {
             try {
                 scanner = new Scanner(socket.getInputStream());
                 try {
-                    writer = new PrintWriter(socket.getOutputStream(), true);
+                    writer = new PrintWriter(socket.getOutputStream(), false);
                     err.println("Pomyslnie polaczono z serwerem.");
                 } catch (final IOException e) {
                     printConnectToServerError(e);
@@ -61,29 +64,44 @@ final class Client {
         System.exit(1);
     }
 
+    private void init() {
+        while (true) {
+            output.println("Co chcesz zrobic?");
+
+            switch (input.nextInt()) {
+                case LOGIN: login(); break;
+                case EXIT: exit(); return;
+                default: break;
+            }
+        }
+    }
+
     private void login() {
         String login;
+        input.nextLine();
 
         while (true) {
             output.print("Podaj login: ");
             if (Pattern.matches("[a-zA-Z_0-9]+", login = input.nextLine())) {
                 break;
             }
-            output.print("Niepoprawny login! ");
+            output.println("Niepoprawny login!:" + login);
         }
-        writer.println(login);
+        output.println("Logowanie...");
+        writeMessage(LOGIN, login);
+    }
 
-        if (scanner.nextBoolean()) {
-            output.println("\n\n\n111111111111111111111111111111111");
-        } else {
-            output.println("\n\n\n00000000000000000000000000000000");
+    private void writeMessage(final int messageType, @NotNull final Object... message) {
+        writer.println(messageType);
+        for (final Object messagePart : message) {
+            writer.println(messagePart);
         }
-
-        // TODO
+        writer.flush();
     }
 
     private void exit() {
         err.println("Rozlaczanie z serwerem...");
+        writeMessage(EXIT);
         writer.close();
         scanner.close();
         try {

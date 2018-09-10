@@ -10,23 +10,27 @@ public final class ClientController implements Controller {
     public ClientController(final Model model, final View view) {
         this.model = model;
         this.view = view;
-        // TODO
     }
 
     @Override
     public final void start() {
         model.init();
         view.init();
-        // TODO
     }
 
     @Override
     public final void exit() {
-        // TODO
+        model.exit();
+        view.exit();
     }
 
     @Override
     public final void login() {
+        // TODO
+    }
+
+    @Override
+    public final void register() {
         // TODO
     }
 }

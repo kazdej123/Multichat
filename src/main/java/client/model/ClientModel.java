@@ -46,6 +46,11 @@ public final class ClientModel implements Model {
         // TODO
     }
 
+    @Override
+    public final void exit() {
+        // TODO
+    }
+
     private static void printConnectToServerError(final Throwable e) {
         printError(e, "Nie udalo sie polaczyc z serwerem");
     }

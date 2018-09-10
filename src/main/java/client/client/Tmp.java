@@ -1,33 +1,24 @@
-package client.main;
+package client.client;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.Closeable;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 final class Tmp {
-    private static final int EXIT = 0;
-    private static final int LOGIN = 1;
-
     private static final Scanner input = new Scanner(System.in);
     private static final PrintStream output = System.out;
     private static final PrintStream err = System.err;
 
-    private Closeable socket = null;
-    private Scanner socketScanner = null;
-    private PrintWriter socketPrintWriter = null;
+    /*private Closeable socket = null;
+    private ChatReader chatReader = null;
+    private ChatWriter chatWriter = null;
 
     private void init() {
         while (true) {
             output.println("Co chcesz zrobic?");
 
             switch (input.nextInt()) {
-                case LOGIN: login(); break;
-                case EXIT: exit(); return;
+                case 0: login(); break;
+                case 1: exit(); return;
                 default: break;
             }
         }
@@ -45,22 +36,22 @@ final class Tmp {
             output.println("Niepoprawny login!:" + login);
         }
         output.println("Logowanie...");
-        writeMessage(LOGIN, login);
+        writeMessage(1, login);
     }
 
     private void writeMessage(final int messageType, @NotNull final Object... message) {
-        socketPrintWriter.println(messageType);
+        chatWriter.println(messageType);
         for (final Object messagePart : message) {
-            socketPrintWriter.println(messagePart);
+            chatWriter.println(messagePart);
         }
-        socketPrintWriter.flush();
+        chatWriter.flush();
     }
 
     private void exit() {
         err.println("Rozlaczanie z serwerem...");
-        writeMessage(EXIT);
-        socketPrintWriter.close();
-        socketScanner.close();
+        writeMessage(0);
+        chatWriter.close();
+        chatReader.close();
         try {
             socket.close();
             err.println("Pomyslnie rozlaczono sie z serwerem.");
@@ -72,5 +63,5 @@ final class Tmp {
     private static void printError(@NotNull final Throwable e, final Object errorMessage) {
         err.println("BLAD! " + errorMessage);
         e.printStackTrace();
-    }
+    }*/
 }

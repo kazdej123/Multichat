@@ -3,23 +3,9 @@ package client.view;
 import client.controller.Controller;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -32,17 +18,17 @@ public final class ClientView implements View {
         return Toolkit.getDefaultToolkit().getScreenSize();
     }
 
+    private final JFrame mainFrame = new JFrame("Multichat");
+
     private final Controller controller = null;
 
     public ClientView() {
-        // TODO
-    }
+        mainFrame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        mainFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
+        mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowClosingListener(mainFrame);
 
-    @Override
-    public final void init() {
-        final Window window = new JFrame("Multichat");
-
-        final JDialog jDialog = new JDialog(window, "Okno logowania");
+        final JDialog jDialog = new JDialog(mainFrame, "Okno logowania");
 
         final Container loginDataPanel = new JPanel();
 
@@ -68,13 +54,20 @@ public final class ClientView implements View {
             if (controller != null) {
                 controller.login();
             } else {
-                window.setVisible(true);
+                jDialog.dispose();
+                mainFrame.setVisible(true);
             }
-        }); // TODO
+        });
 
         loginButtonsPanel.add(loginButton);
-        loginButtonsPanel.add(createJButton("Anuluj", null)); // TODO
-        loginButtonsPanel.add(createJButton("Zarejestruj sie", null)); // TODO
+        loginButtonsPanel.add(createJButton("Anuluj", e -> exitApplication()));
+        loginButtonsPanel.add(createJButton("Zarejestruj sie", e -> {
+            if (controller != null) {
+                controller.register();
+            } else {
+                JOptionPane.showMessageDialog(jDialog, "Rejestracja przebiegla pomyslnie.", "Rejestracja udana", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }));
         loginButtonsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         jDialog.add(loginButtonsPanel, BorderLayout.SOUTH);
@@ -85,6 +78,16 @@ public final class ClientView implements View {
         jDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowClosingListener(jDialog);
         jDialog.setVisible(true);
+    }
+
+    @Override
+    public final void init() {
+        // TODO
+    }
+
+    @Override
+    public final void exit() {
+        // TODO
     }
 
     private static GroupLayout.Group createBaselineGroup(@NotNull final GroupLayout groupLayout) {
@@ -101,16 +104,21 @@ public final class ClientView implements View {
         window.addWindowListener(new WindowAdapter() {
             @Override
             public final void windowClosing(final WindowEvent e) {
-                exit();
+                exitApplication();
             }
         });
     }
 
-    private void exit() {
+    private void exitApplication() {
         if (controller != null) {
             controller.exit();
         } else {
-            System.exit(0);
+            mainFrame.dispose();
         }
+        /*if (controller != null) {
+            controller.exitApplication();
+        } else {
+            System.exit(0);
+        }*/
     }
 }

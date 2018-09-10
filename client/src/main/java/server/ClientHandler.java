@@ -2,20 +2,20 @@ package server;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 final class ClientHandler implements Runnable {
     private static final int EXIT = 0;
     private static final int LOGIN = 1;
 
-    private final Socket socket;
+    private final Closeable socket;
 
-    private Scanner scanner = null;
-    private PrintWriter writer = null;
+    private Scanner socketScanner = null;
+    private PrintWriter socketPrintWriter = null;
 
     ClientHandler(final Socket socket) {
         println("Laczenie z klientem...");
@@ -23,13 +23,13 @@ final class ClientHandler implements Runnable {
 
         if (socket != null) {
             try {
-                scanner = new Scanner(socket.getInputStream());
+                socketScanner = new Scanner(socket.getInputStream());
                 try {
-                    writer = new PrintWriter(socket.getOutputStream(), true);
+                    socketPrintWriter = new PrintWriter(socket.getOutputStream(), true);
                     println("Pomyslnie polaczono z klientem.");
                 } catch (final IOException e) {
                     printConnectToClientError(e);
-                    scanner.close();
+                    socketScanner.close();
                     closeSocket();
                 }
             } catch (final IOException e) {
@@ -39,7 +39,7 @@ final class ClientHandler implements Runnable {
         }
     }
 
-    private static void printConnectToClientError(final Exception e) {
+    private static void printConnectToClientError(final Throwable e) {
         printError(e, "Nie udalo sie polaczyc z klientem");
     }
 
@@ -55,7 +55,7 @@ final class ClientHandler implements Runnable {
     public final void run() {
         if (socket != null) {
             while (true) {
-                switch (scanner.nextInt()) {
+                switch (socketScanner.nextInt()) {
                     case LOGIN: login(); break;
                     case EXIT: exit(); return;
                     default: break;
@@ -65,14 +65,14 @@ final class ClientHandler implements Runnable {
     }
 
     private void login() {
-        final String login = scanner.next("[a-zA-Z_0-9]+");
+        final Object login = socketScanner.next("[a-zA-Z_0-9]+");
         System.out.println(login);
     }
 
     private void exit() {
         println("Rozlaczanie z klientem...");
-        writer.close();
-        scanner.close();
+        socketPrintWriter.close();
+        socketScanner.close();
         try {
             socket.close();
             println("Pomyslnie rozlaczono sie z klientem.");
@@ -85,7 +85,7 @@ final class ClientHandler implements Runnable {
         Server.println(object);
     }
 
-    private static void printError(@NotNull final Exception e, final Object errorMessage) {
+    private static void printError(@NotNull final Throwable e, final Object errorMessage) {
         Server.printError(e, errorMessage);
     }
 }

@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -79,7 +78,7 @@ final class Server implements Runnable {
         }
     }
 
-    private void printServerExitError(final Exception e) {
+    private void printServerExitError(final Throwable e) {
         printError(e,"Nie udalo sie zamknac serwera.");
     }
 
@@ -106,8 +105,7 @@ final class Server implements Runnable {
         while (true) {
             println("Oczekiwanie na klienta...");
             try {
-                final Socket socket = serverSocket.accept();
-                executorService.execute(new ClientHandler(socket));
+                executorService.execute(new ClientHandler(serverSocket.accept()));
             } catch (final SocketException e) {
                 println("Przerwano dzialanie gniazda serwera.");
                 return;
@@ -117,7 +115,7 @@ final class Server implements Runnable {
         }
     }
 
-    static void printError(@NotNull final Exception e, final Object errorMessage) {
+    static void printError(@NotNull final Throwable e, final Object errorMessage) {
         println("BLAD! " + errorMessage);
         e.printStackTrace();
     }

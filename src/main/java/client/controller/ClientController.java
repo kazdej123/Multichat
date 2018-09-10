@@ -1,7 +1,7 @@
-package controller;
+package client.controller;
 
-import model.Model;
-import view.View;
+import client.model.Model;
+import client.view.View;
 
 public final class ClientController implements Controller {
     private final Model model;

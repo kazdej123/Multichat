@@ -1,6 +1,6 @@
-package view;
+package client.view;
 
-import controller.Controller;
+import client.controller.Controller;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.GroupLayout;

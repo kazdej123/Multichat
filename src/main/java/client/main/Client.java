@@ -1,11 +1,11 @@
-package client;
+package client.main;
 
-import controller.ClientController;
-import controller.Controller;
-import model.ClientModel;
-import model.Model;
-import view.ClientView;
-import view.View;
+import client.controller.ClientController;
+import client.controller.Controller;
+import client.model.ClientModel;
+import client.model.Model;
+import client.view.ClientView;
+import client.view.View;
 
 import javax.swing.UIManager;
 import java.awt.EventQueue;

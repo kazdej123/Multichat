@@ -8,10 +8,6 @@
   <artifactId>multichat</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <modules>
-        <module>client</module>
-        <module>server</module>
-    </modules>
 
     <name>multichat</name>
 
@@ -28,6 +24,11 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.jetbrains</groupId>
+          <artifactId>annotations</artifactId>
+          <version>16.0.2</version>
+      </dependency>
   </dependencies>
 
   <build>

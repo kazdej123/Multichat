@@ -1,4 +1,4 @@
-package client;
+package client.main;
 
 import org.jetbrains.annotations.NotNull;
 

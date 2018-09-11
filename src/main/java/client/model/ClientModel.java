@@ -1,71 +1,54 @@
 package client.model;
 
+import common.ChatReader;
+import common.ChatWriter;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static common.ChatUtilities.*;
+
 public final class ClientModel implements Model {
-    private static final PrintStream err = System.err;
-
     private Socket socket = null;
-    private Closeable scanner = null;
-    private Object writer = null;
+    private ChatReader chatReader = null;
+    private ChatWriter chatWriter = null;
 
-    public ClientModel() {
-        // TODO
+    @Override
+    public final void init() throws IOException {
+        socket = new Socket((String) null, 8189);
+        chatReader = new ChatReader(socket.getInputStream());
+        chatWriter = new ChatWriter(socket.getOutputStream());
     }
 
     @Override
-    public final void init() {
-        err.println("Laczenie z serwerem...");
+    public final void close() throws IOException {
         try {
-            socket = new Socket((String) null, 8189);
-            try {
-                scanner = new Scanner(socket.getInputStream());
-                try {
-                    writer = new PrintWriter(socket.getOutputStream(), false);
-                    err.println("Pomyslnie polaczono z serwerem.");
-                } catch (final IOException e) {
-                    printConnectToServerError(e);
-                    scanner.close();
-                    closeSocketAndExit();
-                }
-            } catch (final IOException e) {
-                printConnectToServerError(e);
-                closeSocketAndExit();
+            if (chatWriter != null) {
+                println("Wysylanie do serwera zadania rozlaczenia...");
+                chatWriter.write(0);
             }
-        } catch (final IOException e) {
-            printConnectToServerError(e);
-            System.exit(1);
+        } finally {
+            try {
+                if (chatWriter != null) {
+                    println("Zamykanie strumienia do zapisu...");
+                    chatWriter.close();
+                }
+            } finally {
+                try {
+                    if (chatReader != null) {
+                        println("Zamykanie strumienia do odczytu...");
+                        chatReader.close();
+                    }
+                } finally {
+                    if (socket != null) {
+                        println("Zamykanie polaczenie...");
+                        socket.close();
+                    }
+                }
+            }
         }
-        // TODO
-    }
-
-    @Override
-    public final void exit() {
-        // TODO
-    }
-
-    private static void printConnectToServerError(final Throwable e) {
-        printError(e, "Nie udalo sie polaczyc z serwerem");
-    }
-
-    private static void printError(@NotNull final Throwable e, final Object errorMessage) {
-        err.println("BLAD! " + errorMessage);
-        e.printStackTrace();
-    }
-
-    private void closeSocketAndExit() {
-        try {
-            socket.close();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-        System.exit(1);
     }
 }

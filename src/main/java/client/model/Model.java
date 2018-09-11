@@ -1,7 +1,9 @@
 package client.model;
 
-public interface Model {
-    void init();
+import java.io.IOException;
 
-    void exit();
+public interface Model {
+    void init() throws IOException;
+
+    void close() throws IOException;
 }

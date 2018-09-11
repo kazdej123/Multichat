@@ -1,12 +1,14 @@
 package server;
 
-import org.jetbrains.annotations.NotNull;
+import common.ChatReader;
+import common.ChatWriter;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
+
+import static common.ChatUtilities.printError;
+import static common.ChatUtilities.println;
 
 final class ClientHandler implements Runnable {
     private static final int EXIT = 0;
@@ -14,48 +16,47 @@ final class ClientHandler implements Runnable {
 
     private final Closeable socket;
 
-    private Scanner socketScanner = null;
-    private PrintWriter socketPrintWriter = null;
+    private ChatReader chatReader = null;
+    private ChatWriter chatWriter = null;
+    private boolean running = false;
 
     ClientHandler(final Socket socket) {
-        println("Laczenie z klientem...");
         this.socket = socket;
 
         if (socket != null) {
             try {
-                socketScanner = new Scanner(socket.getInputStream());
+                println("Tworzenie strumienia do odczytu...");
+                chatReader = new ChatReader(socket.getInputStream());
                 try {
-                    socketPrintWriter = new PrintWriter(socket.getOutputStream(), true);
-                    println("Pomyslnie polaczono z klientem.");
+                    println("Tworzenie strumienia do zapisu...");
+                    chatWriter = new ChatWriter(socket.getOutputStream());
                 } catch (final IOException e) {
-                    printConnectToClientError(e);
-                    socketScanner.close();
+                    printError(e, "Nie udalo sie utworzyc strumienia do zapisu.");
+                    chatReader.close();
                     closeSocket();
                 }
             } catch (final IOException e) {
-                printConnectToClientError(e);
+                printError(e, "Nie udalo sie utworzyc strumienia do odczytu.");
                 closeSocket();
             }
+            running = true;
         }
-    }
-
-    private static void printConnectToClientError(final Throwable e) {
-        printError(e, "Nie udalo sie polaczyc z klientem");
     }
 
     private void closeSocket() {
         try {
+            println("Zamykanie polaczenia...");
             socket.close();
         } catch (final IOException e) {
-            e.printStackTrace();
+            printError(e, "Nie udalo sie zamknac polaczenia.");
         }
     }
 
     @Override
     public final void run() {
         if (socket != null) {
-            while (true) {
-                switch (socketScanner.nextInt()) {
+            while (running) {
+                switch (chatReader.nextInt()) {
                     case LOGIN: login(); break;
                     case EXIT: exit(); return;
                     default: break;
@@ -65,27 +66,40 @@ final class ClientHandler implements Runnable {
     }
 
     private void login() {
-        final Object login = socketScanner.next("[a-zA-Z_0-9]+");
+        final Object login = chatReader.next("[a-zA-Z_0-9]+");
         System.out.println(login);
     }
 
     private void exit() {
-        println("Rozlaczanie z klientem...");
-        socketPrintWriter.close();
-        socketScanner.close();
         try {
-            socket.close();
-            println("Pomyslnie rozlaczono sie z klientem.");
+            println("Zamykanie polaczenia z klientem...");
+            close();
         } catch (final IOException e) {
-            printError(e, "Nie udalo sie rozlaczyc z klientem.");
+            printError(e, "Nie udalo sie zamknac polaczenia z klientem.");
+        } finally {
+            running = false;
         }
+        // TODO
     }
 
-    private static void println(final Object object) {
-        Server.println(object);
-    }
-
-    private static void printError(@NotNull final Throwable e, final Object errorMessage) {
-        Server.printError(e, errorMessage);
+    private void close() throws IOException {
+        try {
+            if (chatWriter != null) {
+                println("Zamykanie strumienia do zapisu...");
+                chatWriter.close();
+            }
+        } finally {
+            try {
+                if (chatReader != null) {
+                    println("Zamykanie strumienia do odczytu...");
+                    chatReader.close();
+                }
+            } finally {
+                if (socket != null) {
+                    println("Zamykanie polaczenie...");
+                    socket.close();
+                }
+            }
+        }
     }
 }

@@ -19,16 +19,15 @@ public final class ClientView implements View {
     }
 
     private final JFrame mainFrame = new JFrame("Multichat");
+    private final JDialog loginDialog = new JDialog(mainFrame, "Okno logowania");
 
-    private final Controller controller = null;
+    private Controller controller = null;
 
     public ClientView() {
         mainFrame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         mainFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
         mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowClosingListener(mainFrame);
-
-        final JDialog jDialog = new JDialog(mainFrame, "Okno logowania");
 
         final Container loginDataPanel = new JPanel();
 
@@ -41,12 +40,21 @@ public final class ClientView implements View {
         final Component usernameField = new JTextField("", 20);
         final Component passwordField = new JPasswordField("", 20);
 
-        groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(usernameLabel).addComponent(passwordLabel)).addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(usernameField).addComponent(passwordField)));
-        groupLayout.setVerticalGroup(groupLayout.createSequentialGroup().addGroup(createBaselineGroup(groupLayout).addComponent(usernameLabel).addComponent(usernameField)).addGroup(createBaselineGroup(groupLayout).addComponent(passwordLabel).addComponent(passwordField)));
+        groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
+                .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                        .addComponent(usernameLabel).addComponent(passwordLabel))
+                .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(usernameField).addComponent(passwordField)));
+
+        groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
+                .addGroup(createBaselineGroup(groupLayout)
+                        .addComponent(usernameLabel).addComponent(usernameField))
+                .addGroup(createBaselineGroup(groupLayout)
+                        .addComponent(passwordLabel).addComponent(passwordField)));
 
         loginDataPanel.setLayout(groupLayout);
 
-        jDialog.add(loginDataPanel, BorderLayout.NORTH);
+        loginDialog.add(loginDataPanel, BorderLayout.NORTH);
 
         final JComponent loginButtonsPanel = new JPanel();
 
@@ -54,40 +62,53 @@ public final class ClientView implements View {
             if (controller != null) {
                 controller.login();
             } else {
-                jDialog.dispose();
+                loginDialog.dispose();
                 mainFrame.setVisible(true);
             }
         });
 
         loginButtonsPanel.add(loginButton);
-        loginButtonsPanel.add(createJButton("Anuluj", e -> exitApplication()));
+        loginButtonsPanel.add(createJButton("Anuluj", e -> exit()));
         loginButtonsPanel.add(createJButton("Zarejestruj sie", e -> {
             if (controller != null) {
                 controller.register();
             } else {
-                JOptionPane.showMessageDialog(jDialog, "Rejestracja przebiegla pomyslnie.", "Rejestracja udana", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(loginDialog,
+                        "Rejestracja przebiegla pomyslnie.",
+                        "Rejestracja udana", JOptionPane.INFORMATION_MESSAGE);
             }
         }));
         loginButtonsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        jDialog.add(loginButtonsPanel, BorderLayout.SOUTH);
-        jDialog.getRootPane().setDefaultButton(loginButton);
-        jDialog.pack();
-        jDialog.setLocation((SCREEN_WIDTH - jDialog.getWidth()) / 2, (SCREEN_HEIGHT - jDialog.getHeight()) / 2);
-        jDialog.setResizable(false);
-        jDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        addWindowClosingListener(jDialog);
-        jDialog.setVisible(true);
+        loginDialog.add(loginButtonsPanel, BorderLayout.SOUTH);
+        loginDialog.getRootPane().setDefaultButton(loginButton);
+        loginDialog.pack();
+        loginDialog.setLocation((SCREEN_WIDTH - loginDialog.getWidth()) / 2,
+                (SCREEN_HEIGHT - loginDialog.getHeight()) / 2);
+        loginDialog.setResizable(false);
+        loginDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowClosingListener(loginDialog);
     }
 
     @Override
     public final void init() {
+        loginDialog.setVisible(true);
+    }
+
+    @Override
+    public final void close() {
         // TODO
     }
 
     @Override
-    public final void exit() {
-        // TODO
+    public final void showConnectionError() {
+        JOptionPane.showMessageDialog(loginDialog, "Nie udało się polączyć z serwerem!",
+                "Blad polaczenia!", JOptionPane.ERROR_MESSAGE);
+    }
+
+    @Override
+    public final void setController(final Controller controller) {
+        this.controller = controller;
     }
 
     private static GroupLayout.Group createBaselineGroup(@NotNull final GroupLayout groupLayout) {
@@ -104,21 +125,16 @@ public final class ClientView implements View {
         window.addWindowListener(new WindowAdapter() {
             @Override
             public final void windowClosing(final WindowEvent e) {
-                exitApplication();
+                exit();
             }
         });
     }
 
-    private void exitApplication() {
+    private void exit() {
         if (controller != null) {
             controller.exit();
         } else {
             mainFrame.dispose();
         }
-        /*if (controller != null) {
-            controller.exitApplication();
-        } else {
-            System.exit(0);
-        }*/
     }
 }

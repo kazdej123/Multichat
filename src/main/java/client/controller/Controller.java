@@ -1,7 +1,7 @@
 package client.controller;
 
 public interface Controller {
-    void start();
+    void init();
 
     void exit();
 

@@ -7,12 +7,11 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static common.ChatUtilities.printError;
-import static common.ChatUtilities.println;
+import static common.ChatUtilities.*;
 
 final class Server implements Runnable {
     private enum ServerExitMode {
-        SHUTDOWN, SHUTDOWN_NOW, EXIT
+        CLOSE, CLOSE_NOW, EXIT
     }
 
     private ServerSocket serverSocket = null;
@@ -24,11 +23,11 @@ final class Server implements Runnable {
 
         while (true) {
             switch ((new Scanner(System.in)).nextLine()) {
-                case "shutdown":
-                    server.exit(ServerExitMode.SHUTDOWN);
+                case "close":
+                    server.exit(ServerExitMode.CLOSE);
                     return;
-                case "shutdown -n":
-                    server.exit(ServerExitMode.SHUTDOWN_NOW);
+                case "close -n":
+                    server.exit(ServerExitMode.CLOSE_NOW);
                     return;
                 case "exit":
                     server.exit(ServerExitMode.EXIT);
@@ -40,16 +39,18 @@ final class Server implements Runnable {
     }
 
     private Server() {
-        try {
-            println("Uruchamianie serwera...");
-            serverSocket = new ServerSocket(8189);
-            serverMainThread = new Thread(this);
-            executorService = Executors.newFixedThreadPool(5);
-
-            serverMainThread.start();
-        } catch (final IOException e) {
-            printError(e, "Nie udalo sie uruchomic serwera.");
-            System.exit(-1);
+        synchronized (System.err) {
+            try {
+                println("Uruchamianie serwera...");
+                serverSocket = new ServerSocket(PORT);
+                serverMainThread = new Thread(this);
+                executorService = Executors.newFixedThreadPool(5);
+                serverMainThread.start();
+                println("Pomyslnie uruchomiono serwer.");
+            } catch (final IOException e) {
+                printError(e, "Nie udalo sie uruchomic serwera.");
+                System.exit(-1);
+            }
         }
     }
 
@@ -57,14 +58,15 @@ final class Server implements Runnable {
         try {
             println("Zamykanie gniazda serwera...");
             serverSocket.close();
+            println("Pomyslnie zamknieto gniazdo serwera.");
         } catch (final IOException e) {
             printError(e,"Nie udalo sie zamknac gniazda serwera.");
         } finally {
             switch (serverExitMode) {
-                case SHUTDOWN:
+                case CLOSE:
                     executorService.shutdown();
                     break;
-                case SHUTDOWN_NOW:
+                case CLOSE_NOW:
                     executorService.shutdownNow();
                     break;
                 case EXIT:
@@ -78,6 +80,7 @@ final class Server implements Runnable {
             try {
                 println("Oczekiwanie na watek akceptujacy polaczenia...");
                 serverMainThread.join();
+                println("Pomyslnie zamknieto watek akceptujacy polaczenia.");
             } catch (final InterruptedException e1) {
                 printError(e1,"Watek akceptujacy polaczenia zostal przerwany.");
                 System.exit(-1);
@@ -91,8 +94,9 @@ final class Server implements Runnable {
             try {
                 println("Oczekiwanie na klienta...");
                 executorService.execute(new ClientHandler(serverSocket.accept()));
+                println("Nowy klient przyszedl.");
             } catch (final SocketException e) {
-                println("Przerwano dzialanie serwera.");
+                println("Przerwano oczekiwanie na nowych klientow.");
                 return;
             } catch (final IOException e) {
                 printError(e, "Nie udalo sie polaczyc z nowym klientem.");

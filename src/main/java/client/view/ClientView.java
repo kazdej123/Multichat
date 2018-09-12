@@ -97,7 +97,7 @@ public final class ClientView implements View {
 
     @Override
     public final void close() {
-        // TODO
+        mainFrame.dispose();
     }
 
     @Override

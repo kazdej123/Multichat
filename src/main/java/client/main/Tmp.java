@@ -8,6 +8,9 @@ final class Tmp {
     private static final PrintStream output = System.out;
     private static final PrintStream err = System.err;
 
+    public Tmp() {
+        input.nextInt();
+    }
     /*private Closeable socket = null;
     private ChatReader chatReader = null;
     private ChatWriter chatWriter = null;

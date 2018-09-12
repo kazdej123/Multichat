@@ -23,6 +23,7 @@ public final class ClientController implements Controller {
             try {
                 println("Laczenie z serwerem...");
                 model.init();
+                println("Pomyslnie polaczono sie z serwerem.");
             } catch (final IOException e) {
                 printError(e, "Nie udalo sie polaczyc z serwerem.");
                 view.showConnectionError();
@@ -39,6 +40,7 @@ public final class ClientController implements Controller {
         try {
             println("Rozlaczanie z serwerem...");
             model.close();
+            println("Pomyslnie rozlaczono sie z serwerem.");
         } catch (final IOException e1) {
             printError(e1, "Nie udalo sie rozlaczyc z serwerem.");
             System.exit(-1);

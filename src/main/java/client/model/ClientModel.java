@@ -5,7 +5,8 @@ import common.ChatChannel;
 import java.io.IOException;
 import java.net.Socket;
 
-import static common.ChatUtilities.*;
+import static common.ChatUtilities.EXIT;
+import static common.ChatUtilities.PORT;
 
 public final class ClientModel implements Model {
     private ChatChannel channel = null;
@@ -19,9 +20,7 @@ public final class ClientModel implements Model {
     public final void close() throws IOException {
         if (channel != null) {
             try {
-                println("Wysylanie do serwera zadania rozlaczenia...");
                 channel.writeln(EXIT);
-                println("Pomyslnie wyslano do serwera zadanie rozlaczenia.");
             } finally {
                 channel.close();
             }

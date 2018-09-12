@@ -5,9 +5,7 @@ import common.ChatChannel;
 import java.io.IOException;
 import java.net.Socket;
 
-import static common.ChatUtilities.EXIT;
-import static common.ChatUtilities.printError;
-import static common.ChatUtilities.println;
+import static common.ChatUtilities.*;
 
 final class ClientHandler implements Runnable {
     private ChatChannel channel = null;

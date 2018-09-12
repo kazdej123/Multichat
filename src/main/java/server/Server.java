@@ -39,7 +39,7 @@ final class Server implements Runnable {
     }
 
     private Server() {
-        synchronized (System.err) {
+        synchronized (stderr) {
             try {
                 println("Uruchamianie serwera...");
                 serverSocket = new ServerSocket(PORT);
@@ -56,9 +56,8 @@ final class Server implements Runnable {
 
     private void exit(final ServerExitMode serverExitMode) {
         try {
-            println("Zamykanie gniazda serwera...");
+            println("Zamykanie serwera...");
             serverSocket.close();
-            println("Pomyslnie zamknieto gniazdo serwera.");
         } catch (final IOException e) {
             printError(e,"Nie udalo sie zamknac gniazda serwera.");
         } finally {
@@ -78,11 +77,12 @@ final class Server implements Runnable {
             //noinspection StatementWithEmptyBody
             while (!executorService.isTerminated()) {}
             try {
-                println("Oczekiwanie na watek akceptujacy polaczenia...");
+                println("Konczenie nasluchiwania klientow...");
                 serverMainThread.join();
-                println("Pomyslnie zamknieto watek akceptujacy polaczenia.");
+                println("Pomyslnie zakonczono nasluchiwanie klientow.");
+                println("Pomyslnie zamknieto serwer.");
             } catch (final InterruptedException e1) {
-                printError(e1,"Watek akceptujacy polaczenia zostal przerwany.");
+                printError(e1,"Nie udalo sie zakonczyc nasluchiwania klientow.");
                 System.exit(-1);
             }
         }

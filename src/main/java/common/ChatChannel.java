@@ -2,11 +2,12 @@ package common;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Scanner;
-
-import static common.ChatUtilities.println;
 
 public final class ChatChannel {
     private final Socket socket;
@@ -27,22 +28,16 @@ public final class ChatChannel {
     public final void close() throws IOException {
         try {
             if (output != null) {
-                println("Zamykanie strumienia do zapisu...");
                 output.close();
-                println("Pomyslnie zamknieto strumien do zapisu.");
             }
         } finally {
             try {
                 if (input != null) {
-                    println("Zamykanie strumienia do odczytu...");
                     input.close();
-                    println("Pomyslnie zamknieto strumien do odczytu.");
                 }
             } finally {
                 if (socket != null) {
-                    println("Zamykanie polaczenia...");
                     socket.close();
-                    println("Pomyslnie zamknieto polaczenie.");
                 }
             }
         }

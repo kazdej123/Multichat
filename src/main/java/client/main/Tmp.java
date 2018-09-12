@@ -1,17 +1,15 @@
+/*
 package client.main;
 
-import java.io.PrintStream;
 import java.util.Scanner;
 
 final class Tmp {
     private static final Scanner input = new Scanner(System.in);
-    private static final PrintStream output = System.out;
-    private static final PrintStream err = System.err;
 
     public Tmp() {
         input.nextInt();
     }
-    /*private Closeable socket = null;
+    private Closeable socket = null;
     private ChatReader chatReader = null;
     private ChatWriter chatWriter = null;
 
@@ -66,5 +64,5 @@ final class Tmp {
     private static void printError(@NotNull final Throwable e, final Object errorMessage) {
         err.println("BLAD! " + errorMessage);
         e.printStackTrace();
-    }*/
-}
+    }
+}*/

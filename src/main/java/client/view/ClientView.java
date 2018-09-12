@@ -14,14 +14,14 @@ public final class ClientView implements View {
     private static final int SCREEN_WIDTH = getScreenSize().width;
     private static final int SCREEN_HEIGHT = getScreenSize().height;
 
-    private static Dimension getScreenSize() {
-        return Toolkit.getDefaultToolkit().getScreenSize();
-    }
-
     private final JFrame mainFrame = new JFrame("Multichat");
     private final JDialog loginDialog = new JDialog(mainFrame, "Okno logowania");
 
     private Controller controller = null;
+
+    private static Dimension getScreenSize() {
+        return Toolkit.getDefaultToolkit().getScreenSize();
+    }
 
     public ClientView() {
         mainFrame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -71,7 +71,7 @@ public final class ClientView implements View {
         loginButtonsPanel.add(createJButton("Anuluj", e -> exit()));
         loginButtonsPanel.add(createJButton("Zarejestruj sie", e -> {
             if (controller != null) {
-                controller.register();
+                controller.createAccout();
             } else {
                 JOptionPane.showMessageDialog(loginDialog,
                         "Rejestracja przebiegla pomyslnie.",

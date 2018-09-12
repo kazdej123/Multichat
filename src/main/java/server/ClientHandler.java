@@ -9,7 +9,6 @@ import static common.ChatUtilities.*;
 
 final class ClientHandler implements Runnable {
     private ChatChannel channel = null;
-
     private boolean running = false;
 
     ClientHandler(final Socket socket) {
@@ -36,10 +35,10 @@ final class ClientHandler implements Runnable {
         }
     }
 
-    private void login() {
+    /*private void login() {
         final Object login = channel.next("[a-zA-Z_0-9]+");
         System.out.println(login);
-    }
+    }*/
 
     private void exit() {
         close();

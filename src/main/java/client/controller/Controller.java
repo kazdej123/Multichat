@@ -7,5 +7,5 @@ public interface Controller {
 
     void login();
 
-    void register();
+    void createAccout();
 }

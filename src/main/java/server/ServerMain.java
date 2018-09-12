@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 
 import static common.ChatUtilities.*;
 
-final class Server implements Runnable {
+final class ServerMain implements Runnable {
     private enum ServerExitMode {
         CLOSE, CLOSE_NOW, EXIT
     }
@@ -19,7 +19,7 @@ final class Server implements Runnable {
     private ExecutorService executorService = null;
 
     public static void main(final String[] args) {
-        final Server server = new Server();
+        final ServerMain server = new ServerMain();
 
         while (true) {
             switch ((new Scanner(System.in)).nextLine()) {
@@ -38,13 +38,14 @@ final class Server implements Runnable {
         }
     }
 
-    private Server() {
+    private ServerMain() {
         synchronized (stderr) {
             try {
                 println("Uruchamianie serwera...");
                 serverSocket = new ServerSocket(PORT);
                 serverMainThread = new Thread(this);
                 executorService = Executors.newFixedThreadPool(5);
+
                 serverMainThread.start();
                 println("Pomyslnie uruchomiono serwer.");
             } catch (final IOException e) {

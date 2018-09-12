@@ -94,9 +94,7 @@ final class Server implements Runnable {
             try {
                 println("Oczekiwanie na klienta...");
                 executorService.execute(new ClientHandler(serverSocket.accept()));
-                println("Nowy klient przyszedl.");
             } catch (final SocketException e) {
-                println("Przerwano oczekiwanie na nowych klientow.");
                 return;
             } catch (final IOException e) {
                 printError(e, "Nie udalo sie polaczyc z nowym klientem.");

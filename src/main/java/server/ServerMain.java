@@ -47,9 +47,9 @@ final class ServerMain implements Runnable {
                 executorService = Executors.newFixedThreadPool(5);
 
                 serverMainThread.start();
-                println("Pomyslnie uruchomiono serwer.");
+                println("Pomyślnie uruchomiono serwer.");
             } catch (final IOException e) {
-                printError(e, "Nie udalo sie uruchomic serwera.");
+                printError(e, "Nie udało się uruchomić serwera.");
                 System.exit(-1);
             }
         }
@@ -60,7 +60,7 @@ final class ServerMain implements Runnable {
             println("Zamykanie serwera...");
             serverSocket.close();
         } catch (final IOException e) {
-            printError(e,"Nie udalo sie zamknac gniazda serwera.");
+            printError(e,"Nie udało się zamknąć gniazda serwera.");
         } finally {
             switch (serverExitMode) {
                 case CLOSE:
@@ -78,12 +78,12 @@ final class ServerMain implements Runnable {
             //noinspection StatementWithEmptyBody
             while (!executorService.isTerminated()) {}
             try {
-                println("Konczenie nasluchiwania klientow...");
+                println("Kończenie nasłuchiwania klientów...");
                 serverMainThread.join();
-                println("Pomyslnie zakonczono nasluchiwanie klientow.");
-                println("Pomyslnie zamknieto serwer.");
+                println("Pomyślnie zakończono nasłuchiwanie klientów.");
+                println("Pomyślnie zamknięto serwer.");
             } catch (final InterruptedException e1) {
-                printError(e1,"Nie udalo sie zakonczyc nasluchiwania klientow.");
+                printError(e1,"Nie udało się zakończyć nasłuchiwania klientów.");
                 System.exit(-1);
             }
         }
@@ -98,7 +98,7 @@ final class ServerMain implements Runnable {
             } catch (final SocketException e) {
                 return;
             } catch (final IOException e) {
-                printError(e, "Nie udalo sie polaczyc z nowym klientem.");
+                printError(e, "Nie udało się połączyć z nowym klientem.");
             }
         }
     }

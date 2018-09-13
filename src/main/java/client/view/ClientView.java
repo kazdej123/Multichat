@@ -37,8 +37,8 @@ public final class ClientView implements View {
 
         final Component usernameLabel = new JLabel("Nazwa użytkownika: ");
         final Component passwordLabel = new JLabel("Hasło: ");
-        final Component usernameField = new JTextField("", 20);
-        final Component passwordField = new JPasswordField("", 20);
+        final Component usernameField = new JTextField(null, 20);
+        final Component passwordField = new JPasswordField(null, 20);
 
         groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
                 .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
@@ -58,7 +58,7 @@ public final class ClientView implements View {
 
         final JComponent loginButtonsPanel = new JPanel();
 
-        final JButton loginButton = createJButton("Zaloguj sie", e -> {
+        final JButton loginButton = createJButton("Zaloguj się", e -> {
             if (controller != null) {
                 controller.login();
             } else {
@@ -69,12 +69,12 @@ public final class ClientView implements View {
 
         loginButtonsPanel.add(loginButton);
         loginButtonsPanel.add(createJButton("Anuluj", e -> exit()));
-        loginButtonsPanel.add(createJButton("Zarejestruj sie", e -> {
+        loginButtonsPanel.add(createJButton("Zarejestruj się", e -> {
             if (controller != null) {
                 controller.createAccout();
             } else {
                 JOptionPane.showMessageDialog(loginDialog,
-                        "Rejestracja przebiegla pomyslnie.",
+                        "Rejestracja przebiegła pomyślnie.",
                         "Rejestracja udana", JOptionPane.INFORMATION_MESSAGE);
             }
         }));
@@ -88,37 +88,6 @@ public final class ClientView implements View {
         loginDialog.setResizable(false);
         loginDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowClosingListener(loginDialog);
-    }
-
-    @Override
-    public final void init() {
-        loginDialog.setVisible(true);
-    }
-
-    @Override
-    public final void close() {
-        mainFrame.dispose();
-    }
-
-    @Override
-    public final void showConnectionError() {
-        JOptionPane.showMessageDialog(loginDialog, "Nie udało się polączyć z serwerem!",
-                "Blad polaczenia!", JOptionPane.ERROR_MESSAGE);
-    }
-
-    @Override
-    public final void setController(final Controller controller) {
-        this.controller = controller;
-    }
-
-    private static GroupLayout.Group createBaselineGroup(@NotNull final GroupLayout groupLayout) {
-        return groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE);
-    }
-
-    private static JButton createJButton(final String text, final ActionListener actionListener) {
-        final JButton jButton = new JButton(text);
-        jButton.addActionListener(actionListener);
-        return jButton;
     }
 
     private void addWindowClosingListener(@NotNull final Window window) {
@@ -136,5 +105,36 @@ public final class ClientView implements View {
         } else {
             mainFrame.dispose();
         }
+    }
+
+    private static GroupLayout.Group createBaselineGroup(@NotNull final GroupLayout groupLayout) {
+        return groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE);
+    }
+
+    private static JButton createJButton(final String text, final ActionListener actionListener) {
+        final JButton jButton = new JButton(text);
+        jButton.addActionListener(actionListener);
+        return jButton;
+    }
+
+    @Override
+    public final void init() {
+        loginDialog.setVisible(true);
+    }
+
+    @Override
+    public final void close() {
+        mainFrame.dispose();
+    }
+
+    @Override
+    public final void setController(final Controller controller) {
+        this.controller = controller;
+    }
+
+    @Override
+    public final void showConnectionError() {
+        JOptionPane.showMessageDialog(loginDialog, "Nie udało się połączyć z serwerem!",
+                "Błąd połączenia!", JOptionPane.ERROR_MESSAGE);
     }
 }

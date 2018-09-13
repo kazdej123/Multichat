@@ -7,7 +7,7 @@ public interface View {
 
     void close();
 
-    void showConnectionError();
-
     void setController(Controller controller);
+
+    void showConnectionError();
 }

@@ -11,7 +11,7 @@ public final class ChatUtilities {
     public static final PrintStream stderr = System.err;
 
     public static void printError(@NotNull final Throwable e, final Object errorMessage) {
-        stderr.println("BLAD! " + errorMessage);
+        stderr.println("BŁĄD! " + errorMessage);
         /*e.printStackTrace();
         stderr.println();*/
     }

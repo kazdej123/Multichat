@@ -5,7 +5,7 @@ public interface Controller {
 
     void exit();
 
-    void login();
-
     void createAccout();
+
+    void login();
 }

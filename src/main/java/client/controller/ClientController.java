@@ -21,11 +21,11 @@ public final class ClientController implements Controller {
     public final void init() {
         if (model != null) {
             try {
-                println("Laczenie z serwerem...");
+                println("Łączenie z serwerem...");
                 model.init();
-                println("Pomyslnie polaczono sie z serwerem.");
+                println("Pomyślnie połączono się z serwerem.");
             } catch (final IOException e) {
-                printError(e, "Nie udalo sie polaczyc z serwerem.");
+                printError(e, "Nie udało się połączyć z serwerem.");
                 view.showConnectionError();
                 closeModel();
                 System.exit(-1);
@@ -36,30 +36,30 @@ public final class ClientController implements Controller {
         }
     }
 
-    private void closeModel() {
-        try {
-            println("Rozlaczanie z serwerem...");
-            model.close();
-            println("Pomyslnie rozlaczono sie z serwerem.");
-        } catch (final IOException e1) {
-            printError(e1, "Nie udalo sie rozlaczyc z serwerem.");
-            System.exit(-1);
-        }
-    }
-
     @Override
     public final void exit() {
         closeModel();
         view.close();
     }
 
-    @Override
-    public final void login() {
-        // TODO
+    private void closeModel() {
+        try {
+            println("Rozłączanie z serwerem...");
+            model.close();
+            println("Pomyślnie rozłączono się z serwerem.");
+        } catch (final IOException e1) {
+            printError(e1, "Nie udało się rozłączyć z serwerem.");
+            System.exit(-1);
+        }
     }
 
     @Override
     public final void createAccout() {
+        // TODO
+    }
+
+    @Override
+    public final void login() {
         // TODO
     }
 }

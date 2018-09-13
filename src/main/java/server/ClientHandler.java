@@ -9,17 +9,18 @@ import static common.ChatUtilities.*;
 
 final class ClientHandler implements Runnable {
     private ChatChannel channel = null;
+
     private boolean running = false;
 
     ClientHandler(final Socket socket) {
         if (socket != null) {
             try {
-                println("Tworzenie polaczenia z klientem...");
+                println("Tworzenie połączenia z klientem...");
                 channel = new ChatChannel(socket);
                 running = true;
-                println("Pomyslnie utworzono polaczenie z klientem.");
+                println("Pomyślnie utworzono połączenie z klientem.");
             } catch (final IOException e) {
-                printError(e, "Nie udalo sie polaczyc z klientem.");
+                printError(e, "Nie udało się połączyć z klientem.");
                 close();
             }
         }
@@ -35,11 +36,6 @@ final class ClientHandler implements Runnable {
         }
     }
 
-    /*private void login() {
-        final Object login = channel.next("[a-zA-Z_0-9]+");
-        System.out.println(login);
-    }*/
-
     private void exit() {
         close();
         // TODO
@@ -47,13 +43,18 @@ final class ClientHandler implements Runnable {
 
     private void close() {
         try {
-            println("Zamykanie polaczenia z klientem...");
+            println("Zamykanie połączenia z klientem...");
             channel.close();
-            println("Pomyslnie zamknieto polaczenie z klientem.");
+            println("Pomyślnie zamknięto połączenie z klientem.");
         } catch (final IOException e) {
-            printError(e, "Nie udalo sie zamknac polaczenia z klientem.");
+            printError(e, "Nie udało się zamknąć połączenia z klientem.");
         } finally {
             running = false;
         }
     }
+
+    /*private void login() {
+        final Object login = channel.next("[a-zA-Z_0-9]+");
+        System.out.println(login);
+    }*/
 }

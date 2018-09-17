@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -37,7 +38,7 @@ public final class ClientView implements View {
 
         final Component usernameLabel = new JLabel("Nazwa użytkownika: ");
         final Component passwordLabel = new JLabel("Hasło: ");
-        final Component usernameField = new JTextField(null, 20);
+        final JTextComponent usernameField = new JTextField(null, 20);
         final Component passwordField = new JPasswordField(null, 20);
 
         groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
@@ -61,9 +62,6 @@ public final class ClientView implements View {
         final JButton loginButton = createJButton("Zaloguj się", e -> {
             if (controller != null) {
                 controller.login();
-            } else {
-                loginDialog.dispose();
-                mainFrame.setVisible(true);
             }
         });
 
@@ -71,11 +69,7 @@ public final class ClientView implements View {
         loginButtonsPanel.add(createJButton("Anuluj", e -> exit()));
         loginButtonsPanel.add(createJButton("Zarejestruj się", e -> {
             if (controller != null) {
-                controller.createAccout();
-            } else {
-                JOptionPane.showMessageDialog(loginDialog,
-                        "Rejestracja przebiegła pomyślnie.",
-                        "Rejestracja udana", JOptionPane.INFORMATION_MESSAGE);
+                controller.createAccout(usernameField.getText());
             }
         }));
         loginButtonsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -99,14 +93,6 @@ public final class ClientView implements View {
         });
     }
 
-    private void exit() {
-        if (controller != null) {
-            controller.exit();
-        } else {
-            mainFrame.dispose();
-        }
-    }
-
     private static GroupLayout.Group createBaselineGroup(@NotNull final GroupLayout groupLayout) {
         return groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE);
     }
@@ -115,6 +101,14 @@ public final class ClientView implements View {
         final JButton jButton = new JButton(text);
         jButton.addActionListener(actionListener);
         return jButton;
+    }
+
+    private void exit() {
+        if (controller != null) {
+            controller.exit();
+        } else {
+            System.exit(0);
+        }
     }
 
     @Override
@@ -128,7 +122,7 @@ public final class ClientView implements View {
     }
 
     @Override
-    public final void setController(final Controller controller) {
+    public final void setController(@NotNull final Controller controller) {
         this.controller = controller;
     }
 
@@ -136,5 +130,16 @@ public final class ClientView implements View {
     public final void showConnectionError() {
         JOptionPane.showMessageDialog(loginDialog, "Nie udało się połączyć z serwerem!",
                 "Błąd połączenia!", JOptionPane.ERROR_MESSAGE);
+    }
+
+    @Override
+    public final void showCreateAccountSuccess() {
+        JOptionPane.showMessageDialog(loginDialog,"Rejestracja przebiegła pomyślnie.",
+                "Rejestracja udana", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public final void showCreateAccountError() {
+        // TODO
     }
 }

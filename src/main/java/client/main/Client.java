@@ -10,7 +10,7 @@ import client.view.View;
 import javax.swing.*;
 import java.awt.*;
 
-final class ClientMain {
+final class Client {
     public static void main(final String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

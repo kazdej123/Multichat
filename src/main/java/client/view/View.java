@@ -3,6 +3,7 @@ package client.view;
 import client.controller.Controller;
 
 public interface View {
+
     void init();
 
     void close();
@@ -10,4 +11,8 @@ public interface View {
     void setController(Controller controller);
 
     void showConnectionError();
+
+    void showCreateAccountSuccess();
+
+    void showCreateAccountError();
 }
